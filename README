@@ -1,0 +1,36 @@
+-------------------------- Zubov's Boot Sector (ZBS) --------------------------
+
+Zubov's Boot Sector (ZBS) is a collection of small boot sector programs that
+fit in a single sector (512 bytes) and written in NASM assembly language
+for Intel 8086-compatible CPUs, utilizing IBM PC-compatible BIOS interrupts.
+
+ZBS allows you to easily boot your low-level programs just by copying them
+to the filesystem root.
+
+Each program performs the following:
+  1. Relocates itself from the default boot address (0x7C00) to the lowest
+     possible (0x500, right above the IVT and BDA).
+  2. Loads the specified file from the filesystem root to the specified
+     segment:offset.
+  3. Jumps to the specified segment:offset.
+
+Each program supports both CHS and LBA addressing methods.
+
+------------------------------ How to set up ZBS ------------------------------
+
+To apply a boot sector program to your media run:
+
+    ./apply-zbs.sh <target> <filesystem> <offset> <load_filename>
+                   <load_to_seg:off> <jump_to_seg:off>
+
+For example, to apply ZBS to a FAT16 partition, first sector of which
+is located in the 64th sector of /dev/fda, so that it loads KERNEL.BIN
+to 0x0000:0x1000 and jumps to 0x0100:0x0100, run:
+
+    ./apply-zbs.sh /dev/fda FAT16 63 KERNEL.BIN 0x0000:0x1000 0x0100:0x0100
+
+----------------------------------- License -----------------------------------
+
+All parts of this repository are licensed under the MIT License (the License).
+You may not use it except in compliance with the License. See LICENSE file in
+the repository root for details.
