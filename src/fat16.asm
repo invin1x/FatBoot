@@ -121,8 +121,7 @@ pop si                              ; Current entry = buffer address from stack
 
 ; Check flags
 and byte [si], 11011000b            ; Check if flags are correct
-cmp byte [si], 0
-jne error                           ; Error if flags are not correct
+jnz error                           ; Error if flags are not correct
 
 ; Read file
 mov ax, [si - 11 + 26]              ; AX = current cluster number
