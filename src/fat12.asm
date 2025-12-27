@@ -227,6 +227,8 @@ read_disk:
     xor dx, dx                      ; DX = 0
     div word [BPB_heads]            ; AX = DX:AX / heads = cylinder
                                     ; DX = DX:AX % heads = head
+    cmp ax, 0000001111111111b       ; Error if cylinder > 1023 (CHS limit)
+    ja error
     pop bx                          ; Restore sector from stack in BX
     mov dh, dl                      ; DH = head
     mov ch, al                      ; CH = cylinder (low 8 bits)
