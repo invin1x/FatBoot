@@ -18,8 +18,8 @@ sudo cp ../bin/test.bin ../bin/mnt/TEST.BIN
 # Unmount the image
 sudo umount ../bin/mnt
 
-# Apply ZBS
-../apply-zbs.sh ../bin/image.bin FAT16 0 TEST.BIN 0x1234:0x5678 0x1234:0x5678
+# Apply FatBoot
+../apply.sh ../bin/image.bin FAT16 0 TEST.BIN 0x1234:0x5678 0x1234:0x5678
 
 # Test it in QEMU
 qemu-system-i386 -m 1M -fda ../bin/image.bin -monitor stdio

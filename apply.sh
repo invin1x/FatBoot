@@ -5,24 +5,24 @@ set -e  # Exit on error
 
 # Show help message if argument count is wrong
 if [ $# -ne 6 ]; then
-    echo 'Use: apply-zbs.sh'
+    echo 'Use: apply.sh'
     echo '  <target>           Target block device or file.'
     echo '  <filesystem>       Filesystem type.'
     echo '  <offset>           Filesystem offset in sectors.'
     echo '  <load_filename>    File to load.'
-    echo '  <load_to_seg:off>  segment:offset ZBS will load file to.'
-    echo '  <jump_to_seg:off>  segment:offset ZBS will jump to after loading.'
+    echo '  <load_to_seg:off>  segment:offset to load file to.'
+    echo '  <jump_to_seg:off>  segment:offset to jump to after loading.'
     echo
     echo 'Examples:'
     echo '  # The FAT12 boot sector code that loads KERNEL.BIN to 0x100:0 and'
     echo '  # jumps to 0x110:0 will be written in the 64th sector of /dev/fda,'
     echo '  # assuming it is the start of a FAT12 filesystem.'
-    echo '  apply-zbs.sh /dev/fda FAT12 63 KERNEL.BIN 0x100:0 0x110:0'
+    echo '  apply.sh /dev/fda FAT12 63 KERNEL.BIN 0x100:0 0x110:0'
     echo
     echo '  # The FAT16 boot sector code that loads PROG.BIN to 0x1234:0x5678'
     echo '  # and jumps to 0x4321:0xABCD will be written in the 1st sector of'
     echo '  # disk.raw, assuming it is the start of a FAT16 filesystem.'
-    echo '  apply-zbs.sh disk.raw FAT16 0 PROG.BIN 0x1234:0x5678 0x4321:0xABCD'
+    echo '  apply.sh disk.raw FAT16 0 PROG.BIN 0x1234:0x5678 0x4321:0xABCD'
     echo
     exit 1
 fi
@@ -35,9 +35,10 @@ IFS=":" read -r load_segment load_offset <<< "$5"
 IFS=":" read -r jump_segment jump_offset <<< "$6"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TEMP_DIR="/tmp/fat-boot"
 
-rm -rf /tmp/zbs
-mkdir -p /tmp/zbs
+rm -rf "$TEMP_DIR"
+mkdir -p "$TEMP_DIR"
 
 # Converts filename to 8.3 format
 filename_to_8_3() {
@@ -75,26 +76,26 @@ filename_to_8_3() {
 # FAT16
 if [[ "$filesystem" == "FAT16" ]]; then
     filename_to_8_3
-    nasm -f bin -o /tmp/zbs/fat16.bin "$SCRIPT_DIR/src/fat16.asm" \
+    nasm -f bin -o "$TEMP_DIR/fat16.bin" "$SCRIPT_DIR/src/fat16.asm" \
         -DFILENAME="\"$filename\"" \
         -DLOAD_SEGMENT="$load_segment" \
         -DLOAD_OFFSET="$load_offset" \
         -DJMP_SEGMENT="$jump_segment" \
         -DJMP_OFFSET="$jump_offset"
-    dd if=/tmp/zbs/fat16.bin of="$target" bs=1 seek=$((offset*512+62)) conv=notrunc
+    dd if="$TEMP_DIR/fat16.bin" of="$target" bs=1 seek=$((offset*512+62)) conv=notrunc
     echo Successful!
     exit 0
 
 # FAT12
 elif [[ "$filesystem" == "FAT12" ]]; then
     filename_to_8_3
-    nasm -f bin -o /tmp/zbs/fat12.bin "$SCRIPT_DIR/src/fat12.asm" \
+    nasm -f bin -o "$TEMP_DIR/fat12.bin" "$SCRIPT_DIR/src/fat12.asm" \
         -DFILENAME="\"$filename\"" \
         -DLOAD_SEGMENT="$load_segment" \
         -DLOAD_OFFSET="$load_offset" \
         -DJMP_SEGMENT="$jump_segment" \
         -DJMP_OFFSET="$jump_offset"
-    dd if=/tmp/zbs/fat12.bin of="$target" bs=1 seek=$((offset*512+62)) conv=notrunc
+    dd if="$TEMP_DIR/fat12.bin" of="$target" bs=1 seek=$((offset*512+62)) conv=notrunc
     echo Successful!
     exit 0
 

@@ -1,10 +1,10 @@
--------------------------- Zubov's Boot Sector (ZBS) --------------------------
+----------------------------------- FatBoot -----------------------------------
 
-Zubov's Boot Sector (ZBS) is a collection of small boot sector programs that
+FatBoot is a collection of small boot sector programs that
 fit in a single sector (512 bytes) and written in NASM assembly language
 for Intel 8086-compatible CPUs, utilizing IBM PC-compatible BIOS interrupts.
 
-ZBS allows you to easily boot your low-level programs just by copying them
+FatBoot allows you to easily boot your low-level programs just by copying them
 to the filesystem root.
 
 Each program performs the following:
@@ -16,18 +16,18 @@ Each program performs the following:
 
 Each program supports both CHS and LBA addressing methods.
 
------------------------------- How to set up ZBS ------------------------------
+---------------------------- How to set up FatBoot ----------------------------
 
 To apply a boot sector program to your media run:
 
-    ./apply-zbs.sh <target> <filesystem> <offset> <load_filename>
+    ./apply.sh <target> <filesystem> <offset> <load_filename>
                    <load_to_seg:off> <jump_to_seg:off>
 
-For example, to apply ZBS to a FAT16 partition, first sector of which
+For example, to apply FatBoot to a FAT16 partition, first sector of which
 is located in the 64th sector of /dev/fda, so that it loads KERNEL.BIN
 to 0x0000:0x1000 and jumps to 0x0100:0x0100, run:
 
-    ./apply-zbs.sh /dev/fda FAT16 63 KERNEL.BIN 0x0000:0x1000 0x0100:0x0100
+    ./apply.sh /dev/fda FAT16 63 KERNEL.BIN 0x0000:0x1000 0x0100:0x0100
 
 ----------------------------------- License -----------------------------------
 
