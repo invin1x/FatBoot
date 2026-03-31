@@ -14,7 +14,10 @@ Each program performs the following:
      segment:offset.
   3. Jumps to the specified segment:offset.
 
-Each program supports both CHS and LBA addressing methods.
+Each program supports non-standard disk and filesystem configurations, such as
+sector size, cluster size, number of FAT tables, etc. Moreover, all programs
+support both CHS and LBA addressing methods, making them work on old
+machines and applicable to both hard and floppy drives, all in 512 bytes!
 
 ---------------------------- How to set up FatBoot ----------------------------
 
