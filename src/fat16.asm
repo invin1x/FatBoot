@@ -7,7 +7,7 @@
 ;   JMP_SEGMENT   The segment to jump to after loading.         0x0100
 ;   JMP_OFFSET    The offset to jump to after loading.          0x0100
 
-; Note: 0x74B is THE LOWEST physical address at whitch the file can be loaded.
+; Note: 0x94B is THE LOWEST physical address at whitch the file can be loaded.
 ; If CHS addressing is used while reading a disk, 0x90000-0x9FFFF
 ; will be used as a temporary buffer due to ISA DMA limitations.
 
